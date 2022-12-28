@@ -51,22 +51,40 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/taskup/:id", async (req, res) => {
+    app.patch("/taskup/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
       updatedDoc = {
         $set: {
-          nice: true,
+          task: req.body.task,
         },
       };
-      const result = await tasksCollection.updateOne(
+      const result = await tasksCollection.findOneAndUpdate(
         filter,
         updatedDoc,
         options
       );
       res.send(result);
     });
+
+    // app.patch("/taskup/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   console.log(req.params);
+    //   const filter = { _id: ObjectId(id) };
+    //   const options = { upsert: true };
+    //   updatedDoc = {
+    //     $set: {
+    //       nice: true,
+    //     },
+    //   };
+    //   const result = await tasksCollection.findOneAndUpdate(
+    //     filter,
+    //     updatedDoc,
+    //     options
+    //   );
+    //   res.send(result);
+    // });
 
     app.delete("/delete/:id", async (req, res) => {
       const id = req.params.id;
