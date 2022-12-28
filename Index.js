@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
@@ -26,6 +26,38 @@ async function run() {
       const result = await tasksCollection.insertOne(task);
       res.send(result);
     });
+
+    app.get("/tasks/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const results = await tasksCollection.find(query).toArray();
+      res.send(results);
+    });
+
+    app.post("/task/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      updatedDoc = {
+        $set: {
+          completed: true,
+        },
+      };
+      const result = await tasksCollection.updateOne(
+        filter,
+        updatedDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    app.delete("/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = { _id: ObjectId(id) };
+      const result = await tasksCollection.deleteOne(product);
+      res.send(result);
+    });
+    // ---------<
   } finally {
   }
 }
